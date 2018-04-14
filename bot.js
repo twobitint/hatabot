@@ -18,13 +18,14 @@ client.headers['X-Riot-Token'] = process.env.RIOT_API_KEY
 
 games = {}
 promises = []
-for (summoner in users) {
+for (let summoner in users) {
     const user = users[summoner]
     promises.push(new Promise((resolve, reject) => {
         client.get('spectator/v3/active-games/by-summoner/' + user.league, function (err, res, body) {
             if ('gameId' in body) {
                 const gameId = body.gameId
                 if (user.lastGame != gameId) {
+                    console.log(summoner)
                     if (!(gameId in games)) {
                         games[gameId] = {}
                     }
@@ -36,8 +37,8 @@ for (summoner in users) {
     }))
 }
 Promise.all(promises).then(function () {
-    for (gameId in games) {
-        var game = games[gameId]
+    for (let gameId in games) {
+        const game = games[gameId]
         for (summoner in game) {
             user = game[summoner]
             users[summoner].lastGame = gameId
@@ -67,14 +68,14 @@ function SendDiscordMessage(users, poroImageBuffer)
                 if (username == users[userKey].discord) {
                     console.log(user);
                     console.log(username);
-                    // bot.uploadFile({
-                    //     to: user.id,
-                    //     file: poroImageBuffer,
-                    //     message: 'hello?',
-                    //     filename: 'poro.png'
-                    // }, function (err, resp) {
-                    //     console.error(err)
-                    // })
+                    bot.uploadFile({
+                        to: user.id,
+                        file: poroImageBuffer,
+                        message: 'hello?',
+                        filename: 'poro.png'
+                    }, function (err, resp) {
+                        console.error(err)
+                    })
                 }
             }
         }
