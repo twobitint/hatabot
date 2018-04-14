@@ -8,6 +8,7 @@ const mergeImg          = require('merge-img')
 const Discord           = require('discord.io')
 const request           = require('request-json')
 const jsonfile          = require('jsonfile')
+const sharp             = require('sharp')
 const users             = require(file)
 
 dotenv.config()
@@ -48,9 +49,9 @@ Promise.all(promises).then(function () {
         })
     }
     // update users file
-    // jsonfile.writeFile(file, users, function (err) {
-    //     if (err) console.error(err)
-    // })
+    jsonfile.writeFile(file, users, function (err) {
+        if (err) console.error(err)
+    })
 })
 
 function SendDiscordMessage(users, poroImageBuffer)
@@ -74,7 +75,8 @@ function SendDiscordMessage(users, poroImageBuffer)
                         message: 'hello?',
                         filename: 'poro.png'
                     }, function (err, resp) {
-                        console.error(err)
+                        if (err) console.error(err)
+                        bot.disconnect()
                     })
                 }
             }
@@ -98,7 +100,10 @@ function GetPoroScreenshot(name, callback) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto('https://porofessor.gg/live/na/' + name);
-        await page.setViewport({width: 1920, height: 1200});
+        await page.evaluate(() => {
+            NightModeSwitch.switch()
+        })
+        await page.setViewport({width: 1920, height: 1200, deviceScaleFactor: 2});
         await page.waitForSelector('.cards-list');
         //await page.screenshot({path: '/var/www/yahoobb/public/test.png'});
 
@@ -117,7 +122,15 @@ function GetPoroScreenshot(name, callback) {
                 // Save image as file
                 //img.write('/var/www/yahoobb/public/test.png', callback);
                 // Get image as `Buffer`
-                img.getBuffer("image/png", (error, buf) => callback(buf));
+                img.getBuffer("image/png", (error, buf) => {
+                    sharp(buf)
+                    .resize(1000)
+                    .toBuffer()
+                    .then( data => {
+                        callback(data)
+                    })
+                    //callback(buf);
+                })
             });
     })();
 }
