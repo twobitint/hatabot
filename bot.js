@@ -97,40 +97,45 @@ function SendDiscordMessage(users, poroImageBuffer)
 
 function GetPoroScreenshot(name, callback) {
     (async () => {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto('https://porofessor.gg/live/na/' + name);
-        await page.evaluate(() => {
-            NightModeSwitch.switch()
-        })
-        await page.setViewport({width: 1920, height: 1200, deviceScaleFactor: 2});
-        await page.waitForSelector('.cards-list');
-        //await page.screenshot({path: '/var/www/yahoobb/public/test.png'});
+        try {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.goto('https://porofessor.gg/live/na/' + name);
+            await page.evaluate(() => {
+                NightModeSwitch.switch()
+            })
+            await page.setViewport({width: 1920, height: 1200, deviceScaleFactor: 2});
+            await page.waitForSelector('.cards-list');
+            //await page.screenshot({path: '/var/www/yahoobb/public/test.png'});
 
-        const elems = await page.$$('.cards-list');
-        var i = 1;
-        for (let elem of elems) {
-            //console.log(elementHandle.getProperties());
-            await elem.screenshot({path: '/tmp/test' + i + '.png'});
-            i++;
-        }
+            const elems = await page.$$('.cards-list');
+            var i = 1;
+            for (let elem of elems) {
+                //console.log(elementHandle.getProperties());
+                await elem.screenshot({path: './test' + i + '.png'});
+                i++;
+            }
 
-        await browser.close();
+            await browser.close();
 
-        mergeImg(['/tmp/test1.png', '/tmp/test2.png'], {direction: true})
-            .then((img) => {
-                // Save image as file
-                //img.write('/var/www/yahoobb/public/test.png', callback);
-                // Get image as `Buffer`
-                img.getBuffer("image/png", (error, buf) => {
-                    sharp(buf)
-                    .resize(1000)
-                    .toBuffer()
-                    .then( data => {
-                        callback(data)
+            mergeImg(['./test1.png', './test2.png'], {direction: true})
+                .then((img) => {
+                    // Save image as file
+                    //img.write('/var/www/yahoobb/public/test.png', callback);
+                    // Get image as `Buffer`
+                    img.getBuffer("image/png", (error, buf) => {
+                        sharp(buf)
+                        //.resize(1000)
+                        .toBuffer()
+                        .then( data => {
+                            callback(data)
+                        })
+                        //callback(buf);
                     })
-                    //callback(buf);
-                })
-            });
+                });
+
+        } catch (err) {
+            console.log(err)
+        }
     })();
 }
