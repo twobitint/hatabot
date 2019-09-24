@@ -37,7 +37,8 @@ yargs.command('add <summoner> <discord>', 'Add a user', (yargs) => {
 function addUser(summoner, discord)
 {
     summoner = summoner.toLowerCase()
-    client.get('summoner/v3/summoners/by-name/' + summoner, function (err, res, body) {
+    client.get('summoner/v4/summoners/by-name/' + summoner, function (err, res, body) {
+        console.log(body)
         users[summoner] = {
             league: body.id,
             discord: discord,

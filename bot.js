@@ -22,10 +22,10 @@ promises = []
 for (let summoner in users) {
     const user = users[summoner]
     promises.push(new Promise((resolve, reject) => {
-        client.get('spectator/v3/active-games/by-summoner/' + user.league, function (err, res, body) {
+        client.get('spectator/v4/active-games/by-summoner/' + user.league, function (err, res, body) {
             if ('gameId' in body) {
                 const gameId = body.gameId
-                if (user.lastGame != gameId) {
+                if (true || user.lastGame != gameId) {
                     console.log(summoner)
                     if (!(gameId in games)) {
                         games[gameId] = {}

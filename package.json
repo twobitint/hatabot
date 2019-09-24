@@ -18,5 +18,8 @@
     "request-json": "^0.6.3",
     "sharp": "^0.20.1",
     "yargs": "^11.0.0"
+  },
+  "resolutions": {
+    "minipass": "2.7.0"
   }
 }
